@@ -1,0 +1,34 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "headers": [
+    {
+      "source": "/blog",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=0, s-maxage=0, must-revalidate" }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=0, s-maxage=0, must-revalidate" }
+      ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/filtering-unqualified-real-estate-leads-framework",
+      "destination": "/blog/filtering-unqualified-real-estate-leads-framework",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    { "source": "/sitemap.xml", "destination": "https://open-seo.abdelsameaa.workers.dev/api/autonomous/sitemap" },
+    { "source": "/sitemap_index.xml", "destination": "https://open-seo.abdelsameaa.workers.dev/api/autonomous/sitemap" },
+    { "source": "/sitemap-articles.xml", "destination": "https://open-seo.abdelsameaa.workers.dev/api/autonomous/sitemap" },
+    { "source": "/admin", "destination": "/" },
+    { "source": "/studio-ops-701", "destination": "/" },
+    { "source": "/blog/:slug", "destination": "/api/article-ssr?slug=:slug" },
+    { "source": "/blog/:slug/", "destination": "/api/article-ssr?slug=:slug" }
+  ]
+}
