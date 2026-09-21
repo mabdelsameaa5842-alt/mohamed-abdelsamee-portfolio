@@ -23,10 +23,10 @@
     }
   ],
   "rewrites": [
-    { "source": "/sitemap.xml", "destination": "/api/sitemap" },
-    { "source": "/sitemap-clean.xml", "destination": "/api/sitemap" },
-    { "source": "/sitemap_index.xml", "destination": "/api/sitemap_index" },
-    { "source": "/sitemap-articles.xml", "destination": "/api/sitemap_index" },
+    { "source": "/sitemap-clean.xml", "destination": "https://open-seo.abdelsameaa.workers.dev/api/autonomous/sitemap" },
+    { "source": "/sitemap.xml", "destination": "https://open-seo.abdelsameaa.workers.dev/api/autonomous/sitemap" },
+    { "source": "/sitemap_index.xml", "destination": "https://open-seo.abdelsameaa.workers.dev/api/autonomous/sitemap" },
+    { "source": "/sitemap-articles.xml", "destination": "https://open-seo.abdelsameaa.workers.dev/api/autonomous/sitemap" },
     { "source": "/admin", "destination": "/" },
     { "source": "/studio-ops-701", "destination": "/" },
     { "source": "/blog/:slug", "destination": "/api/article-ssr?slug=:slug" },
