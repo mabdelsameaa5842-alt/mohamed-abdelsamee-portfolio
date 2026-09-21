@@ -20,12 +20,20 @@
       "source": "/filtering-unqualified-real-estate-leads-framework",
       "destination": "/blog/filtering-unqualified-real-estate-leads-framework",
       "permanent": true
+    },
+    {
+      "source": "/sitemap_index.xml",
+      "destination": "/sitemap.xml",
+      "permanent": true
+    },
+    {
+      "source": "/sitemap-articles.xml",
+      "destination": "/sitemap.xml",
+      "permanent": true
     }
   ],
   "rewrites": [
     { "source": "/sitemap.xml", "destination": "/api/sitemap" },
-    { "source": "/sitemap_index.xml", "destination": "/api/sitemap" },
-    { "source": "/sitemap-articles.xml", "destination": "/api/sitemap" },
     { "source": "/admin", "destination": "/" },
     { "source": "/studio-ops-701", "destination": "/" },
     { "source": "/blog/:slug", "destination": "/api/article-ssr?slug=:slug" },

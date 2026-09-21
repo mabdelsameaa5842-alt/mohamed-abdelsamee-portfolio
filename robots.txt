@@ -58,4 +58,3 @@ Allow: /
 
 # Sitemaps & Machine-Readable AI Guidance
 Sitemap: https://mohamed-abdelsamee-portfolio.vercel.app/sitemap.xml
-Sitemap: https://mohamed-abdelsamee-portfolio.vercel.app/sitemap_index.xml
