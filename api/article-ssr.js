@@ -118,11 +118,10 @@ function renderMarkdown(raw) {
 }
 
 function optimizeSeoTitle(rawTitle) {
-  if (!rawTitle) return 'دليل النمو الرقمي | م. محمد عبد السميع';
+  if (!rawTitle) return 'دليل النمو الرقمي والميديا باينج 2026 | م. محمد عبد السميع';
   const brandSuffix = ' | م. محمد عبد السميع';
-  const maxTitleLen = 60;
-  const maxBaseLen = maxTitleLen - brandSuffix.length; // 39 chars
-
+  
+  // Clean unwanted automated prefixes/suffixes
   let cleaned = rawTitle
     .replace(/^The Ultimate Guide to Guide To\s+/i, 'Guide to ')
     .replace(/^The Ultimate Guide to\s+/i, '')
@@ -135,25 +134,27 @@ function optimizeSeoTitle(rawTitle) {
     .replace(/:\s*Complete Strategic Guide & Implementation$/i, '')
     .trim();
 
+  // If the title already includes the author/brand, do not append brand suffix
+  if (cleaned.includes('محمد عبد السميع')) {
+    return cleaned;
+  }
+
+  // Allow up to 68 characters for Arabic title to retain city/intent uniqueness
+  const maxTotalLen = 68;
+  const maxBaseLen = maxTotalLen - brandSuffix.length; // ~46 chars
+
   if (cleaned.length > maxBaseLen) {
     const trimmed = cleaned.slice(0, maxBaseLen);
     const lastSpace = trimmed.lastIndexOf(' ');
-    if (lastSpace > 18) {
+    if (lastSpace > 24) {
       cleaned = trimmed.slice(0, lastSpace).trim();
     } else {
       cleaned = trimmed.trim();
     }
   }
 
-  cleaned = cleaned.replace(/\s+(for|to|in|of|with|and|the|a|an)$/i, '').trim();
-
-  let finalTitle = `${cleaned}${brandSuffix}`;
-  if (finalTitle.length > maxTitleLen) {
-    cleaned = cleaned.slice(0, maxTitleLen - brandSuffix.length).trim();
-    cleaned = cleaned.replace(/\s+(for|to|in|of|with|and|the|a|an)$/i, '').trim();
-    finalTitle = `${cleaned}${brandSuffix}`;
-  }
-  return finalTitle;
+  cleaned = cleaned.replace(/\s+(for|to|in|of|with|and|the|a|an|في|من|إلى|مع)$/i, '').trim();
+  return `${cleaned}${brandSuffix}`;
 }
 
 const articleMemoryCache = new Map();
@@ -260,7 +261,11 @@ export default async function handler(req, res) {
   const baseTitle = article.title || 'دليل ميديا باينج وسيو وتوسيع المتاجر';
   const title = baseTitle;
   const seoTitle = optimizeSeoTitle(baseTitle);
-  const metaDesc = article.metaDescription || article.excerpt || `دليل عملي في ميديا باينج وإعلانات الأداء يركز على ${baseTitle} لمضاعفة العائد الإعلاني وخفض تكلفة الشراء والنمو لعام 2026.`;
+  const metaDesc = (article.metaDescription && article.metaDescription.trim().length > 30)
+    ? article.metaDescription.trim()
+    : (article.excerpt && article.excerpt.trim().length > 30)
+      ? article.excerpt.trim()
+      : `دليل استراتيجي متخصص في ${baseTitle} لرفع العائد الإعلاني وتصدر محركات البحث العضوي 2026 مع م. محمد عبد السميع.`;
   const canonicalUrl = `https://mohamed-abdelsamee-portfolio.vercel.app/blog/${cleanSlug}`;
   const category = article.category || 'سيو وميديا باينج متقدم';
   const readTime = article.readTime || '7 دقائق قراءة';
