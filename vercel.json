@@ -23,9 +23,9 @@
     }
   ],
   "rewrites": [
-    { "source": "/sitemap.xml", "destination": "https://open-seo.abdelsameaa.workers.dev/api/autonomous/sitemap" },
-    { "source": "/sitemap_index.xml", "destination": "https://open-seo.abdelsameaa.workers.dev/api/autonomous/sitemap" },
-    { "source": "/sitemap-articles.xml", "destination": "https://open-seo.abdelsameaa.workers.dev/api/autonomous/sitemap" },
+    { "source": "/sitemap.xml", "destination": "https://open-seo.abdelsameaa.workers.dev/api/autonomous/sitemap?v=2" },
+    { "source": "/sitemap_index.xml", "destination": "https://open-seo.abdelsameaa.workers.dev/api/autonomous/sitemap?v=2" },
+    { "source": "/sitemap-articles.xml", "destination": "https://open-seo.abdelsameaa.workers.dev/api/autonomous/sitemap?v=2" },
     { "source": "/admin", "destination": "/" },
     { "source": "/studio-ops-701", "destination": "/" },
     { "source": "/blog/:slug", "destination": "/api/article-ssr?slug=:slug" },
