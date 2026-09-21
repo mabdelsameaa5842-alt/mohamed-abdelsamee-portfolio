@@ -24,6 +24,7 @@
   ],
   "rewrites": [
     { "source": "/sitemap.xml", "destination": "/api/sitemap" },
+    { "source": "/sitemap-clean.xml", "destination": "/api/sitemap" },
     { "source": "/sitemap_index.xml", "destination": "/api/sitemap_index" },
     { "source": "/sitemap-articles.xml", "destination": "/api/sitemap_index" },
     { "source": "/admin", "destination": "/" },

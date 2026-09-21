@@ -57,4 +57,5 @@ User-agent: Amazonbot
 Allow: /
 
 # Sitemaps & Machine-Readable AI Guidance
+Sitemap: https://mohamed-abdelsamee-portfolio.vercel.app/sitemap-clean.xml
 Sitemap: https://mohamed-abdelsamee-portfolio.vercel.app/sitemap.xml
