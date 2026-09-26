@@ -197,6 +197,14 @@ export default async function handler(req, res) {
     return res.status(404).send('Not Found');
   }
 
+  // Automatic 301 Permanent Redirect for legacy -v2 duplicate URLs to protect SEO & resolve duplicate-title warnings
+  const articlesMap = getDefaultArticles();
+  if (/^.*-v2$/i.test(cleanSlug) && !articlesMap.has(cleanSlug)) {
+    const canonicalSlug = cleanSlug.replace(/-v2$/i, '');
+    res.setHeader('Location', `/blog/${encodeURIComponent(canonicalSlug)}`);
+    return res.status(301).end();
+  }
+
   // 0. Check in-memory fast cache
   let article = null;
   const cached = articleMemoryCache.get(cleanSlug);
@@ -206,7 +214,6 @@ export default async function handler(req, res) {
 
   // 1. Check local pre-loaded articles Map (< 0.01ms lookup)
   if (!article) {
-    const articlesMap = getDefaultArticles();
     const found = articlesMap.get(cleanSlug);
     if (found && found.content && found.content.length > 200) {
       article = found;
@@ -219,7 +226,7 @@ export default async function handler(req, res) {
   if (!article || !article.content || article.content.length < 200) {
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 3500);
+      const timeoutId = setTimeout(() => controller.abort(), 8000);
       const workerResp = await fetch(
         `https://open-seo.abdelsameaa.workers.dev/api/public/autonomous-articles?slug=${encodeURIComponent(cleanSlug)}`,
         { signal: controller.signal }

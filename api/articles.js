@@ -31,11 +31,15 @@ export default async function handler(req, res) {
   }
 
   const { slug } = req.query || {};
-  const cleanSlug = slug ? String(slug).replace(/\/index\.html$/i, '').replace(/index\.html$/i, '').replace(/\/$/, '') : null;
+  let cleanSlug = slug ? String(slug).replace(/\/index\.html$/i, '').replace(/index\.html$/i, '').replace(/\/$/, '') : null;
 
   // If specific slug is requested:
   if (cleanSlug) {
-    const localMatch = baseArticles.find(a => a.slug === cleanSlug);
+    let localMatch = baseArticles.find(a => a.slug === cleanSlug);
+    if (!localMatch && /^.*-v2$/i.test(cleanSlug)) {
+      cleanSlug = cleanSlug.replace(/-v2$/i, '');
+      localMatch = baseArticles.find(a => a.slug === cleanSlug);
+    }
     if (localMatch && localMatch.content && localMatch.content.length > 200) {
       return res.status(200).json(localMatch);
     }
@@ -43,7 +47,7 @@ export default async function handler(req, res) {
     // Query OpenSEO Edge Worker for live dynamic content
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 3500);
+      const timeoutId = setTimeout(() => controller.abort(), 8000);
       const workerResp = await fetch(
         `https://open-seo.abdelsameaa.workers.dev/api/public/autonomous-articles?slug=${encodeURIComponent(cleanSlug)}`,
         { signal: controller.signal }
@@ -74,7 +78,7 @@ export default async function handler(req, res) {
 
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2500);
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
     const workerResp = await fetch(
       'https://open-seo.abdelsameaa.workers.dev/api/public/autonomous-articles',
       { signal: controller.signal }
