@@ -20,6 +20,11 @@
       "source": "/filtering-unqualified-real-estate-leads-framework",
       "destination": "/blog/filtering-unqualified-real-estate-leads-framework",
       "permanent": true
+    },
+    {
+      "source": "/blog/:slug(.*)-v2",
+      "destination": "/blog/:slug",
+      "permanent": true
     }
   ],
   "rewrites": [
