@@ -133,7 +133,7 @@
           <div style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; background: rgba(255, 196, 0, 0.1); border: 1px solid rgba(255, 196, 0, 0.25); border-radius: 20px; margin-bottom: 16px;">
             <span style="width: 8px; height: 8px; border-radius: 50%; background: #FFC400; box-shadow: 0 0 10px #FFC400;"></span>
             <span id="hero-badge-count" style="color: #FFC400; font-size: 13px; font-weight: 800;">
-              مكتبة المعرفة والنمو التسويقي 2026 (688 مقال استراتيجي منشور ومطابق للسايت ماب 100%)
+              مكتبة المعرفة والنمو التسويقي 2026 (أدلة استراتيجية وتطبيقات عملية متقدمة)
             </span>
           </div>
           <h1 style="font-size: clamp(1.9rem, 4vw, 2.6rem); font-weight: 900; color: #FFFFFF; margin: 0 0 14px 0; line-height: 1.35;">
@@ -160,7 +160,7 @@
 
           <!-- Active Filter Stats & Clear -->
           <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 14px; font-size: 13px; color: #94A3B8;">
-            <div id="results-count">إجمالي المنشور في المدونة: 688 مقالاً • السايت ماب: 690 رابطاً</div>
+            <div id="results-count"></div>
             <button id="reset-filters" style="display: none; background: none; border: none; color: #FFC400; cursor: pointer; font-family: Cairo, sans-serif; font-size: 12px; font-weight: 700; text-decoration: underline;">
               إلغاء الفلاتر والبحث
             </button>
@@ -209,7 +209,7 @@
                 </div>
                 <h2 style="margin: 0 0 10px 0; font-size: 1.15rem; font-weight: 800; line-height: 1.55;">
                   <a href="/blog/top-sitemap-crawler-workflow" style="color: #FFFFFF; text-decoration: none; transition: color 0.2s;">
-                    Top Top Sitemap Crawler Workflow Comparison & Expert Evaluation (2026)
+                    دليل هندسة ومقارنة Sitemap Crawler Workflows المتقدمة (2026)
                   </a>
                 </h2>
                 <p style="margin: 0; font-size: 13.5px; color: #94A3B8; line-height: 1.75;">
@@ -237,7 +237,7 @@
                 </div>
                 <h2 style="margin: 0 0 10px 0; font-size: 1.15rem; font-weight: 800; line-height: 1.55;">
                   <a href="/blog/top-make-automation-checklist" style="color: #FFFFFF; text-decoration: none; transition: color 0.2s;">
-                    Top Top Make Automation Checklist Comparison & Expert Evaluation (2026)
+                    قائمة التحقق الهندسية لأتمتة Make.com لفرق التسويق والمبيعات (2026)
                   </a>
                 </h2>
                 <p style="margin: 0; font-size: 13.5px; color: #94A3B8; line-height: 1.75;">
@@ -752,11 +752,11 @@
 
       function renderArticles() {
         const filtered = getFilteredArticles();
-        resultsCount.textContent = `إجمالي المنشور في المدونة: ${ALL_ARTICLES.length} مقالاً • السايت ماب: ${ALL_ARTICLES.length} مقالاً • المعروض: ${Math.min(visibleLimit, filtered.length)} من ${filtered.length}${currentCategory !== "الكل" ? ` في "${currentCategory}"` : ""}`;
-        
         if (searchQuery || currentCategory !== "الكل") {
+          resultsCount.textContent = `عرض ${filtered.length} مقال متخصص${currentCategory !== "الكل" ? ` في قسم "${currentCategory}"` : ""}`;
           resetBtn.style.display = "inline-block";
         } else {
+          resultsCount.textContent = "";
           resetBtn.style.display = "none";
         }
 
@@ -841,23 +841,36 @@
       // Live Dynamic Hydration: fetch latest articles including autonomous ones
       async function hydrateLiveArticles() {
         try {
-          const res = await fetch(`/api/articles?_t=${Date.now()}`).catch(() => null); const finalRes = (res && res.ok) ? res : await fetch(`https://open-seo.abdelsameaa.workers.dev/api/public/autonomous-articles?_t=${Date.now()}`);
+          const res = await fetch(`/api/articles?_t=${Date.now()}`).catch(() => null); 
+          const finalRes = (res && res.ok) ? res : await fetch(`https://open-seo.abdelsameaa.workers.dev/api/public/autonomous-articles?_t=${Date.now()}`);
           if (finalRes && finalRes.ok) {
             const liveData = await finalRes.json();
             if (Array.isArray(liveData) && liveData.length > 0) {
-              ALL_ARTICLES = liveData.map(a => ({
-                slug: a.slug,
-                title: a.title,
-                excerpt: (a.excerpt || a.metaDescription || "").slice(0, 160),
-                category: a.category || "ميديا باينج وتوسيع ROAS",
-                readTime: a.readTime || "7 دقائق",
-                focusKeyword: a.focusKeyword || a.title,
-                country: a.country || (a.slug && a.slug.includes("saudi") ? "السعودية" : (a.slug && a.slug.includes("egypt") ? "مصر" : "مصر والخليج"))
-              }));
+              ALL_ARTICLES = liveData.map(a => {
+                const cleanTitle = (a.title || "")
+                  .replace(/^The Ultimate Guide to Guide To\s+/i, "Guide to ")
+                  .replace(/^The Ultimate Guide to\s+/i, "")
+                  .replace(/\s+for Modern Businesses$/i, "")
+                  .replace(/\s+Comparison & Expert Evaluation \(2026\)$/i, "")
+                  .replace(/^Top Top\s+/i, "Top ")
+                  .replace(/^Top Best\s+/i, "Best ")
+                  .replace(/\b2026\s+2026\b/g, "2026")
+                  .replace(/\s*\([^)]+\)\s*\([^)]+\)/g, (match) => match.includes("رؤية هندسية") ? " (رؤية هندسية وتطبيق عملي 2026)" : " (دليل وتطبيق 2026)")
+                  .trim();
+                return {
+                  slug: a.slug,
+                  title: cleanTitle || a.title,
+                  excerpt: (a.excerpt || a.metaDescription || "").slice(0, 160),
+                  category: a.category || "ميديا باينج وتوسيع ROAS",
+                  readTime: a.readTime || "7 دقائق",
+                  focusKeyword: a.focusKeyword || a.title,
+                  country: a.country || (a.slug && a.slug.includes("saudi") ? "السعودية" : (a.slug && a.slug.includes("egypt") ? "مصر" : "مصر والخليج"))
+                };
+              });
               
               const badgeEl = document.getElementById("hero-badge-count");
               if (badgeEl) {
-                badgeEl.textContent = `مكتبة المعرفة والنمو التسويقي 2026 (${ALL_ARTICLES.length} مقال استراتيجي منشور ومطابق للسايت ماب 100%)`;
+                badgeEl.textContent = `مكتبة المعرفة والنمو التسويقي 2026 (${ALL_ARTICLES.length} مقال استراتيجي ودليل تطبيقي)`;
               }
               
               renderArticles();

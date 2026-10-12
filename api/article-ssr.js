@@ -158,7 +158,7 @@ function optimizeSeoTitle(rawTitle) {
 }
 
 const articleMemoryCache = new Map();
-const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
+const CACHE_TTL_MS = 60 * 1000; // 1 minute fresh cache
 
 let defaultArticlesMap = null;
 function getDefaultArticles() {
@@ -222,14 +222,26 @@ export default async function handler(req, res) {
     }
   }
 
-  // 2. If article content is empty or short, fetch full live content from Cloudflare Worker
-  if (!article || !article.content || article.content.length < 200) {
+  // 2. If article content is empty, short, or contaminated with machine gibberish, fetch full live content from Cloudflare Worker
+  const hasGibberish = article && article.content && (
+    article.content.includes("تحويلات البشرية") ||
+    article.content.includes("تحويلات النظر") ||
+    article.content.includes("النظر إلى الأسفل") ||
+    article.content.includes("Cloud AI Platform API") ||
+    article.content.includes("Direct Answer Block من 50 إلى 70 كلمة") ||
+    article.content.includes("تجربة المستخدم\n\nتجربة المستخدم")
+  );
+
+  if (!article || !article.content || article.content.length < 200 || hasGibberish) {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 8000);
       const workerResp = await fetch(
         `https://open-seo.abdelsameaa.workers.dev/api/public/autonomous-articles?slug=${encodeURIComponent(cleanSlug)}`,
-        { signal: controller.signal }
+        {
+          headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36' },
+          signal: controller.signal
+        }
       );
       clearTimeout(timeoutId);
 
@@ -244,6 +256,18 @@ export default async function handler(req, res) {
       }
     } catch (err) {
       console.warn('[SSR Engine] Worker fetch failed:', err.message);
+    }
+  }
+
+  // Automatic Title Sanitization (Deduplicate trailing suffixes and repeated years)
+  if (article && article.title) {
+    article.title = article.title
+      .replace(/\b2026\s+2026\b/g, "2026")
+      .replace(/\s*\([^)]+\)\s*\([^)]+\)/g, (match) => {
+        return match.includes("رؤية هندسية") ? " (رؤية هندسية وتطبيق عملي 2026)" : " (دليل وتطبيق 2026)";
+      });
+    if (article.title.startsWith("دليل 2026") && article.title.endsWith("(دليل وتطبيق 2026)")) {
+      article.title = article.title.replace(/\s*\(دليل وتطبيق 2026\)$/, "").trim();
     }
   }
 

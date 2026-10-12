@@ -50,7 +50,10 @@ export default async function handler(req, res) {
       const timeoutId = setTimeout(() => controller.abort(), 8000);
       const workerResp = await fetch(
         `https://open-seo.abdelsameaa.workers.dev/api/public/autonomous-articles?slug=${encodeURIComponent(cleanSlug)}`,
-        { signal: controller.signal }
+        {
+          headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36' },
+          signal: controller.signal
+        }
       );
       clearTimeout(timeoutId);
 
@@ -93,19 +96,19 @@ export default async function handler(req, res) {
     const timeoutId = setTimeout(() => controller.abort(), 8000);
     const workerResp = await fetch(
       'https://open-seo.abdelsameaa.workers.dev/api/public/autonomous-articles',
-      { signal: controller.signal }
+      {
+        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36' },
+        signal: controller.signal
+      }
     );
     clearTimeout(timeoutId);
 
     if (workerResp.ok) {
       const autoArticles = await workerResp.json();
-      if (Array.isArray(autoArticles)) {
-        for (const autoArt of autoArticles) {
-          if (autoArt.slug && !existingSlugs.has(autoArt.slug)) {
-            mergedArticles.unshift(autoArt); // Add latest autonomous articles at the top
-            existingSlugs.add(autoArt.slug);
-          }
-        }
+      if (Array.isArray(autoArticles) && autoArticles.length > 0) {
+        const workerSlugs = new Set(autoArticles.map(a => a.slug));
+        const missingFromWorker = baseArticles.filter(b => b.slug && !workerSlugs.has(b.slug));
+        return res.status(200).json([...autoArticles, ...missingFromWorker]);
       }
     }
   } catch (err) {
